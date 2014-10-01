@@ -1,0 +1,146 @@
+Problem Statement:
+
+Trigram analysis: 
+	Look at each set of three adjacent words in a 
+	document. Use the first two words of the set as a key, and remember the 
+	fact that the third word followed that key. Once you’ve finished, you 
+	know the list of individual words that can follow each two word sequence
+	in the document. 
+	
+Result:
+	Generate new text based on triagram analysis.
+	
+Design:
+	Based on the requirement, it is clear that we need a way to read and 
+	parse a text file to analyze the words present in it, and then use the 
+	result of this analysis to generate new text.
+	
+	So, design involves seperation of parsing a text file and Generation of 
+	new text.   
+	
+	Created one class for text parsing called TextParser.java that deals with 
+	reading a text file, parsing it and then extracting all the words present 
+	in the text file ignoring line breaks, carriage return and punctuation and 
+	just getting individual strings of words. It uses these Strings of words
+	and performs triagram analysis on them to generate a Map of key, value
+	pairs.
+	
+	Also, created another class Generator whose only purpose is to generate new
+	text based on the input it receives.
+	
+Environment:
+	IDE: Eclipse
+	language: Java jdk 1.6
+	Unit Test: JUnit 4
+	Files: testFiles/  
+	
+TextParser.java:
+
+	Usage:	
+		The primary usagae of this class is to read, parse and perform 
+		triagram analysis on a text file.
+			
+		Inorder to acheive this it has 2 public methods and one private method.
+		
+		1.parseFile: Decided to use a final method so that its behaviour could 
+		not be overridden. This method takes the path to a file as input and 
+		then validates the file using the private method isValidFile, once 
+		validated. It uses a Scanner object to scan each line of the file and
+		uses a Compiled Pattern to replace all punctuation and numbers in the 
+		given line.
+		
+		Decided to go with Scanner object as it is better equiped to read
+		files and also encapusulates us from actaully reading from stream and 
+		directly gives a string.
+		
+		Also decided to use Pattern object as we are using a regex to find 
+		punctuation and numbers in a loop. The Pattern object compiles and keeps
+		the regex is memory and allows faster execution of the loop.
+		
+		once the regex is applied we split the line using space as a delimiter 
+		and get individual words from the line. These indiviual words are then 
+		added to a List. This list of words are then returned by the method.
+		
+		2. populateTriagrams: This method also final to not allow its behavior
+		to be overridden takes a list of strings as input. It iterates the list
+		of words and uses the following algorithm to generate a triagram Map.
+		
+		Decided to go with a Map as it is the most suitable collection to store
+		key value pairs.
+		
+		The algorithm loops through the list of strings which should have atleast
+		3 elements in it, if less than 3 elements are passed it will throw an
+		IllegalArgumentException. It loops on the list of Strings untill it 
+		reaches the last three elements of the list, for each iteration it
+		gets, the current element and its next 2 elements. It generates a new
+		String using the current element + Space + next element. It uses this 
+		new String as a Key for The Map and checks if the key exists in the Map.
+		if the key exists in the map it will add the last element in the current
+		iteration to the list of values present in the map. If the key does not 
+		exist in the map then it will add the new String as Key to the Map and 
+		add the third element in this iteration to new List, which is then 
+		added as the value of the Map.
+		
+		3. isValidFile: This method checks for the validity of the file, to 
+		see if it exists and checks if the file can be read. It returns a
+		Boolean 'true' if the file is valid.
+		
+TriagramGenerator.java:
+	
+	usuage:
+		
+		This class deals with generation of new text based on the Triagram
+		analyzed map it receives.
+		
+		1. generate: This method takes a triagram Analzed map as input and 
+		returns a new String containing the new text of words it generated.
+		This method checks if the input map	is Null/empty and throws an 
+		exception indicating the same.
+		
+		It picks a random key from the input Map using the getRandomString 
+		private method. once it gets the random starting point it starts
+		iterating the Map and for each iteration it get a random element from
+		the list present in the current iteration's value.
+		
+		It then appends this value to the StringBuilder object that stores new 
+		text being generated. It then splits the current iterations key using 
+		space as a delimiter to generate the next key in the iteration. 
+		Here before generating the next key it checks if the split produced an 
+		array of atleast 2 elements, if it does	not it will throw an 
+		IllegalArgumentException as a proper triagram analyzed Map should 
+		have keys delimited with Space.
+		
+		If the String array has 2 elements, it uses the second element of the 
+		array and appends space and string extracted from the current value as
+		the new key. If this key exists in the input Map the iteration continues
+		untill it reaches a point where the key does not exist in the map
+		or reaches the limit specified in the constant WORD_LIMIT.
+		
+		WORD_LIMIT: because of randomness involved in its behaviour and a high
+		potential for repetition, we need to have a upper limit to the number
+		of words it generates else there is high chance of getting OutOfMemory
+		error.
+		
+		2. getRandomString: is a private utility method to extract a random
+		String from the list of Strings it is given as input. It uses Random
+		Object's nextInt method to generate a random integer. It generates a 
+		random integer between 0 and size of the list it is passed and uses this 
+		random integer to return the element present at that location in the 
+		list.
+		
+Configuration:
+
+	The JUnit test cases are dependant on the files located in folder /testFiles
+	of this project.
+	
+References:
+
+	 http://www.gutenberg.org/cache/epub/22014/pg22014.txt
+	 http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html
+	 
+	 
+		
+ 
+		
+		
+				
